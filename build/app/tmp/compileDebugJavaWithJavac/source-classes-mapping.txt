@@ -1,0 +1,4 @@
+io/flutter/plugins/GeneratedPluginRegistrant.java
+ io.flutter.plugins.GeneratedPluginRegistrant
+com/mbkim/jokbalmanager/jokbal_manager/BuildConfig.java
+ com.mbkim.jokbalmanager.jokbal_manager.BuildConfig
