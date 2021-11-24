@@ -72,13 +72,12 @@ class _AddOrderDialogState extends State<AddOrderDialog> {
       titlePadding: const EdgeInsets.all(0),
       contentPadding: const EdgeInsets.all(0),
       title: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         width: width,
         color: Theme.of(context).primaryColor,
         child: const Text(
           '추가하기',
-          style: TextStyle(
-              color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.white, fontSize: 28),
         ),
       ),
       actionsAlignment: MainAxisAlignment.spaceAround,
