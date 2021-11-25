@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:jokbal_manager/model/order.dart';
+import 'package:jokbal_manager/model/order_entity.dart';
 import 'package:jokbal_manager/util.dart';
-
-enum LegType { front, back, mix }
 
 class AddOrderDialog extends StatefulWidget {
   const AddOrderDialog({Key? key}) : super(key: key);
@@ -17,7 +17,7 @@ class _AddOrderDialogState extends State<AddOrderDialog> {
   late String date = formatter.format(DateTime.now());
   final double fontSize = 18;
 
-  LegType? _selectedLeg;
+  LegType? _selectedLeg = LegType.front;
   var _totalPrice = 0;
   var _diffPrice = 0;
   final _weightController = TextEditingController();
@@ -28,7 +28,6 @@ class _AddOrderDialogState extends State<AddOrderDialog> {
   void initState() {
     super.initState();
     _weightController.addListener(() {
-      print("DATE: $date");
       int price = _priceController.toInt();
       double weight = _weightController.toDouble();
       int deposit = _depositController.toInt();
@@ -91,7 +90,13 @@ class _AddOrderDialogState extends State<AddOrderDialog> {
         _renderDialogButton(
             title: '추가',
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(OrderEntity(
+                date: date,
+                type: _selectedLeg!.toInt(),
+                price: _priceController.toInt(),
+                weight: _weightController.toDouble(),
+                deposit: _depositController.toInt(),
+              ));
             }),
       ],
       content: SizedBox(
@@ -289,7 +294,6 @@ class _AddOrderDialogState extends State<AddOrderDialog> {
                       lastDate: DateTime(2099));
                   setState(() {
                     date = formatter.format(pickedDate!);
-                    print(date);
                   });
                 },
                 child: Container(

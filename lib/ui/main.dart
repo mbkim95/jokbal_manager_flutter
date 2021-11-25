@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:jokbal_manager/model/order_entity.dart';
 import 'package:jokbal_manager/ui/add_order_dialog.dart';
 
 void main() {
@@ -51,9 +52,11 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
           const dialog = AddOrderDialog();
-          showDialog(context: context, builder: (context) => dialog);
+          OrderEntity order =
+              await showDialog(context: context, builder: (context) => dialog);
+          // TODO: DB에 저장
         },
         tooltip: '등록하기',
         child: const Icon(Icons.add),
