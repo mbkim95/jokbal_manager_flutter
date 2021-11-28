@@ -1,3 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'order_entity.g.dart';
+
+@JsonSerializable()
 class OrderEntity {
   String date;
   int type;
@@ -11,4 +16,9 @@ class OrderEntity {
       required this.price,
       required this.weight,
       required this.deposit});
+
+  factory OrderEntity.fromJson(Map<String, dynamic> json) =>
+      _$OrderEntityFromJson(json);
+
+  Map<String, dynamic> toJson() => _$OrderEntityToJson(this);
 }

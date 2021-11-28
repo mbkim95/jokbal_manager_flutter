@@ -12,3 +12,19 @@ class Order {
       required this.weight,
       required this.deposit});
 }
+
+class DayOrder {
+  String date;
+  List<Order> orders;
+
+  DayOrder(this.date, this.orders);
+}
+
+class MonthOrder {
+  String month;
+  int price;
+  double weight;
+  int balance;
+
+  MonthOrder(this.month, this.price, this.weight, this.balance);
+}
