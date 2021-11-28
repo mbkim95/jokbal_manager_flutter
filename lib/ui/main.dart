@@ -46,6 +46,9 @@ class _MyHomePageState extends State<MyHomePage>
   var _index = 0;
   var formatter = DateFormat('yyyy-MM');
   late var month = formatter.format(DateTime.now());
+  late var maxDay = DateTime(DateTime.parse('$month-01').year,
+          DateTime.parse('$month-01').month + 1, 0)
+      .day;
 
   @override
   void initState() {
@@ -95,6 +98,7 @@ class _MyHomePageState extends State<MyHomePage>
                             onPressed: () {
                               var now = DateTime.parse("$month-01");
                               setState(() {
+                                maxDay = DateTime(now.year, now.month, 0).day;
                                 month = formatter
                                     .format(DateTime(now.year, now.month - 1));
                               });
@@ -109,9 +113,12 @@ class _MyHomePageState extends State<MyHomePage>
                             onPressed: () async {
                               var _pickedMonth = await showMonthPicker(
                                   context: context,
-                                  initialDate: DateTime.now());
+                                  initialDate: DateTime.parse('$month-01'));
                               setState(() {
-                                month = formatter.format(_pickedMonth!);
+                                maxDay = DateTime(_pickedMonth!.year,
+                                        _pickedMonth.month + 1, 0)
+                                    .day;
+                                month = formatter.format(_pickedMonth);
                               });
                             },
                           ),
@@ -120,6 +127,8 @@ class _MyHomePageState extends State<MyHomePage>
                             onPressed: () {
                               var now = DateTime.parse("$month-01");
                               setState(() {
+                                maxDay =
+                                    DateTime(now.year, now.month + 2, 0).day;
                                 month = formatter
                                     .format(DateTime(now.year, now.month + 1));
                               });
@@ -168,12 +177,14 @@ class _MyHomePageState extends State<MyHomePage>
                                 top: 4, bottom: 64, left: 8, right: 8)
                             : const EdgeInsets.symmetric(
                                 horizontal: 8, vertical: 4),
-                    child: Text('2021-11-${index + 1}'),
+                    child: Text(index + 1 > 9
+                        ? '$month-${index + 1}'
+                        : '$month-0${index + 1}'),
                   );
                 },
                 separatorBuilder: (context, index) =>
                     const Divider(color: Colors.black38),
-                itemCount: 31,
+                itemCount: maxDay,
               ),
             ),
           ],
