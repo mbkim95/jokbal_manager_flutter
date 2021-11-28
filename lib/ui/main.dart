@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:jokbal_manager/model/order_entity.dart';
 import 'package:jokbal_manager/ui/add_order_dialog.dart';
+import 'package:jokbal_manager/ui/daily_list_tile.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 void main() {
@@ -166,30 +167,13 @@ class _MyHomePageState extends State<MyHomePage>
               ),
             ),
             Expanded(
-              child: ListView.separated(
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: index == 0
-                        ? const EdgeInsets.only(
-                            top: 16, bottom: 4, left: 8, right: 8)
-                        : index == 30
-                            ? const EdgeInsets.only(
-                                top: 4, bottom: 64, left: 8, right: 8)
-                            : const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                    child: Text(index + 1 > 9
-                        ? '$month-${index + 1}'
-                        : '$month-0${index + 1}'),
-                  );
-                },
-                separatorBuilder: (context, index) =>
-                    const Divider(color: Colors.black38),
-                itemCount: maxDay,
-              ),
+              child: _renderList(),
             ),
           ],
         ),
-        Container()
+        Container(
+          color: Colors.grey,
+        )
       ]),
       floatingActionButton: _index == 0
           ? FloatingActionButton(
@@ -203,6 +187,17 @@ class _MyHomePageState extends State<MyHomePage>
               child: const Icon(Icons.add),
             )
           : null,
+    );
+  }
+
+  ListView _renderList() {
+    return ListView.separated(
+      itemBuilder: (context, index) {
+        return DailyListTile(index: index, month: month, maxDay: maxDay);
+      },
+      separatorBuilder: (context, index) =>
+          const Divider(color: Colors.black38),
+      itemCount: maxDay,
     );
   }
 }
