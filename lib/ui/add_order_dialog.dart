@@ -83,7 +83,6 @@ class _AddOrderDialogState extends State<AddOrderDialog> {
       actions: [
         _renderDialogButton(
             title: '취소',
-            color: Colors.redAccent,
             onPressed: () {
               Navigator.of(context).pop();
             }),
