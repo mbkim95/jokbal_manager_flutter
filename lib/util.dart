@@ -30,3 +30,22 @@ extension EnumConverter on LegType {
     }
   }
 }
+
+List<DayOrder> generateDummyDate(int year, int month) {
+  var orders = <DayOrder>[];
+  var days = getDaysOfMonthList(year, month);
+  for (var order in days) {
+    orders.add(DayOrder(order, <Order>[]));
+  }
+  return orders;
+}
+
+List<String> getDaysOfMonthList(int year, int month) {
+  var dates = <String>[];
+  var maxDay = DateTime(year, month + 1, 0).day;
+  for (int i = 1; i <= maxDay; i++) {
+    var date = i < 10 ? '$year-$month-0$i' : '$year-$month-$i';
+    dates.add(date);
+  }
+  return dates;
+}
