@@ -31,7 +31,14 @@ extension EnumConverter on LegType {
   }
 }
 
-List<DayOrder> generateDummyDate(int year, int month) {
+List<DayOrder> generateDummyDate() {
+  var today = DateTime.now();
+  var year = today.year.toInt();
+  var month = today.month.toInt();
+  return generateDummyDateByParameter(year, month);
+}
+
+List<DayOrder> generateDummyDateByParameter(int year, int month) {
   var orders = <DayOrder>[];
   var days = getDaysOfMonthList(year, month);
   for (var order in days) {
