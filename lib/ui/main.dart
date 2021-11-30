@@ -6,6 +6,8 @@ import 'package:jokbal_manager/ui/add_order_dialog.dart';
 import 'package:jokbal_manager/ui/daily_list_tile.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
 
+final formatter = DateFormat('yyyy-MM');
+
 void main() {
   runApp(const MyApp());
 }

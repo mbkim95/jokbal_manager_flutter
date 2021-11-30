@@ -10,17 +10,15 @@ class DatabaseProvider {
     if (_db != null) {
       return _db!;
     }
-    _db = await createDB("jokbal_manager.db", "orders");
+    _db = await openDatabase(
+        join(await getDatabasesPath(), "jokbal_manager.db"),
+        onCreate: (db, version) => _createDB(db),
+        version: 1);
     return _db!;
   }
 
-  Future createDB(String dbName, String tableName) async {
-    var db = await openDatabase(join(await getDatabasesPath(), dbName),
-        onCreate: (db, version) {
-      return db.execute(
-          'CREATE TABLE $tableName (date TEXT PRIMARY KEY, type INTEGER PRIMARY KEY, price INTEGER, weight REAL, deposit INTEGER');
-    }, onUpgrade: (db, oldVersion, newVersion) {
-      // migrate db
-    });
+  static Future _createDB(Database db) async {
+    await db.execute(
+        'CREATE TABLE orders(date TEXT, type INTEGER, price INTEGER, weight REAL, deposit INTEGER, PRIMARY KEY (date, type))');
   }
 }

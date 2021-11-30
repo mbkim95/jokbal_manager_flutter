@@ -5,6 +5,8 @@ import 'package:jokbal_manager/model/order.dart';
 import 'package:jokbal_manager/model/order_entity.dart';
 import 'package:jokbal_manager/util.dart';
 
+final formatter = DateFormat('yyyy-MM-dd');
+
 class AddOrderDialog extends StatefulWidget {
   const AddOrderDialog({Key? key}) : super(key: key);
 
@@ -13,7 +15,6 @@ class AddOrderDialog extends StatefulWidget {
 }
 
 class _AddOrderDialogState extends State<AddOrderDialog> {
-  var formatter = DateFormat('yyyy-MM-dd');
   late String date = formatter.format(DateTime.now());
   final double fontSize = 18;
 
