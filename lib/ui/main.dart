@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:jokbal_manager/model/order.dart';
 import 'package:jokbal_manager/model/order_entity.dart';
+import 'package:jokbal_manager/repository/order_repository.dart';
 import 'package:jokbal_manager/ui/add_order_dialog.dart';
 import 'package:jokbal_manager/ui/daily_list_tile.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -23,7 +25,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),
-        home: const MyHomePage(title: '세라 입고 관리'),
+        home: MyHomePage(title: '세라 입고 관리'),
         localizationsDelegates: const [
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
@@ -35,9 +37,9 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
   final String title;
+
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -45,23 +47,62 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+  TabController? _tabController;
   var _index = 0;
-  var formatter = DateFormat('yyyy-MM');
-  late var month = formatter.format(DateTime.now());
-  late var maxDay = DateTime(DateTime.parse('$month-01').year,
-          DateTime.parse('$month-01').month + 1, 0)
-      .day;
+  final OrderRepository repository = OrderRepository();
+  late int year;
+  late int month;
+  int totalPrice = 0;
+  double totalWeight = 0.0;
+  int totalBalance = 0;
+  List<DayOrder> monthOrder = [];
+
+  Future _loadOrder(int year, int month) async {
+    var list = await repository.getMonthOrders(year, month);
+    setState(() {
+      monthOrder = list;
+    });
+  }
+
+  Row _renderTotalValue() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        const SizedBox(width: 40),
+        Text('${totalWeight}kg'),
+        Text('$totalPrice원'),
+        Text('$totalBalance원')
+      ],
+    );
+  }
+
+  ListView _renderList() {
+    return ListView.separated(
+      itemBuilder: (context, index) {
+        return DailyListTile(
+            index: index,
+            maxDay: DateTime(year, month + 1, 0).day,
+            order: monthOrder[index]);
+      },
+      separatorBuilder: (context, index) =>
+          const Divider(color: Colors.black38),
+      itemCount: monthOrder.length,
+    );
+  }
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
-    _tabController.addListener(() {
+    _tabController!.addListener(() {
       setState(() {
-        _index = _tabController.index;
+        _index = _tabController!.index;
       });
     });
+    var now = DateTime.now();
+    year = now.year;
+    month = now.month;
+    _loadOrder(year, month);
   }
 
   @override
@@ -99,42 +140,45 @@ class _MyHomePageState extends State<MyHomePage>
                           ElevatedButton(
                             child: const Icon(Icons.arrow_left),
                             onPressed: () {
-                              var now = DateTime.parse("$month-01");
-                              setState(() {
-                                maxDay = DateTime(now.year, now.month, 0).day;
-                                month = formatter
-                                    .format(DateTime(now.year, now.month - 1));
-                              });
+                              if (year == 2015 && month == 1) {
+                                return;
+                              }
+                              month--;
+                              if (month == 0) {
+                                month = 12;
+                                year--;
+                              }
+                              _loadOrder(year, month);
                             },
                           ),
                           ElevatedButton(
                             child: Padding(
                               padding:
                                   const EdgeInsets.symmetric(horizontal: 16),
-                              child: Text(month),
+                              child: Text(
+                                  '$year-${month < 10 ? "0$month" : "$month"}'),
                             ),
                             onPressed: () async {
                               var _pickedMonth = await showMonthPicker(
                                   context: context,
-                                  initialDate: DateTime.parse('$month-01'));
-                              setState(() {
-                                maxDay = DateTime(_pickedMonth!.year,
-                                        _pickedMonth.month + 1, 0)
-                                    .day;
-                                month = formatter.format(_pickedMonth);
-                              });
+                                  initialDate: DateTime.parse(
+                                      '${'$year-${month < 10 ? "0$month" : "$month"}'}-01'));
+                              if (_pickedMonth != null) {
+                                year = _pickedMonth.year;
+                                month = _pickedMonth.month;
+                                _loadOrder(year, month);
+                              }
                             },
                           ),
                           ElevatedButton(
                             child: const Icon(Icons.arrow_right),
                             onPressed: () {
-                              var now = DateTime.parse("$month-01");
-                              setState(() {
-                                maxDay =
-                                    DateTime(now.year, now.month + 2, 0).day;
-                                month = formatter
-                                    .format(DateTime(now.year, now.month + 1));
-                              });
+                              month++;
+                              if (month == 13) {
+                                month = 1;
+                                year++;
+                              }
+                              _loadOrder(year, month);
                             },
                           ),
                         ],
@@ -142,28 +186,16 @@ class _MyHomePageState extends State<MyHomePage>
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          '합계',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold),
-                        ),
+                      children: const [
+                        Text('합계',
+                            style: TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold)),
                         Text('중량'),
                         Text('금액'),
-                        Text('잔고')
+                        Text('잔고'),
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        SizedBox(
-                          width: 40,
-                        ),
-                        Text('0.0kg'),
-                        Text('0원'),
-                        Text('0원')
-                      ],
-                    ),
+                    _renderTotalValue(),
                   ],
                 ),
               ),
@@ -181,25 +213,17 @@ class _MyHomePageState extends State<MyHomePage>
           ? FloatingActionButton(
               onPressed: () async {
                 const dialog = AddOrderDialog();
-                OrderEntity order = await showDialog(
+                OrderEntity? order = await showDialog(
                     context: context, builder: (context) => dialog);
-                // TODO: DB에 저장
+                if (order != null) {
+                  await repository.insertOrder(order);
+                  _loadOrder(year, month);
+                }
               },
               tooltip: '등록하기',
               child: const Icon(Icons.add),
             )
           : null,
-    );
-  }
-
-  ListView _renderList() {
-    return ListView.separated(
-      itemBuilder: (context, index) {
-        return DailyListTile(index: index, month: month, maxDay: maxDay);
-      },
-      separatorBuilder: (context, index) =>
-          const Divider(color: Colors.black38),
-      itemCount: maxDay,
     );
   }
 }
