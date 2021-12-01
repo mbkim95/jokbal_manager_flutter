@@ -1,7 +1,7 @@
+import 'package:intl/intl.dart';
 import 'package:jokbal_manager/model/order.dart';
 import 'package:jokbal_manager/model/order_entity.dart';
 import 'package:jokbal_manager/repository/order_dao.dart';
-import 'package:jokbal_manager/ui/main.dart';
 import 'package:jokbal_manager/util.dart';
 
 class OrderRepository {
@@ -9,7 +9,8 @@ class OrderRepository {
   final _dao = OrderDao();
 
   Future insertOrder(OrderEntity order) async {
-    final searchedOrder = await _dao.findOrderByType(order.date, order.type);
+    OrderEntity? searchedOrder =
+        await _dao.findOrderByType(order.date, order.type);
     if (searchedOrder == null) {
       await _dao.insertOrder(order);
       return;
@@ -20,6 +21,7 @@ class OrderRepository {
   Future<List<DayOrder>> getMonthOrders(int year, int month) async {
     var start = '$year-$month-01';
     var end = DateTime(year, month + 1, 0);
+    var formatter = DateFormat('yyyy-MM-dd');
     var orders = await _dao.getOrderDate(start, formatter.format(end));
     return _convertEntityToOrder(orders, year, month);
   }
@@ -68,9 +70,9 @@ class OrderRepository {
     var orders = generateDummyDateByParameter(year, month);
     for (var order in entities) {
       var day = order.date.split('-').map((e) => int.parse(e)).toList()[2];
-      var type = order.type == 0
+      var type = order.type == 1
           ? LegType.front
-          : (order.type == 1 ? LegType.back : LegType.mix);
+          : (order.type == 2 ? LegType.back : LegType.mix);
       orders[day - 1].orders.add(Order(
           type: type,
           price: order.price,
