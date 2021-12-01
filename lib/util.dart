@@ -50,8 +50,9 @@ List<DayOrder> generateDummyDateByParameter(int year, int month) {
 List<String> getDaysOfMonthList(int year, int month) {
   var dates = <String>[];
   var maxDay = DateTime(year, month + 1, 0).day;
+  String textMonth = month < 10 ? '0$month' : '$month';
   for (int i = 1; i <= maxDay; i++) {
-    var date = i < 10 ? '$year-$month-0$i' : '$year-$month-$i';
+    var date = i < 10 ? '$year-$textMonth-0$i' : '$year-$textMonth-$i';
     dates.add(date);
   }
   return dates;
