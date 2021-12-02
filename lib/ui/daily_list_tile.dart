@@ -29,14 +29,20 @@ class _DailyListTileState extends State<DailyListTile> {
   bool isBack = false;
   bool isMix = false;
 
-  @override
-  void initState() {
-    super.initState();
-    sumTotalValue();
+  void _initialize() {
+    totalPrice = 0;
+    totalWeight = 0;
+    totalBalance = 0;
+    prices = [0, 0, 0];
+    weights = [0, 0, 0];
+    balances = [0, 0, 0];
+    isFront = false;
+    isBack = false;
+    isMix = false;
   }
 
-  void sumTotalValue() {
-    final order = widget.order;
+  void sumTotalValue(DayOrder order) {
+    _initialize();
     for (var e in order.orders) {
       totalPrice += e.price;
       totalWeight += e.weight;
@@ -63,6 +69,7 @@ class _DailyListTileState extends State<DailyListTile> {
   @override
   Widget build(BuildContext context) {
     final order = widget.order;
+    sumTotalValue(order);
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -90,13 +97,9 @@ class _DailyListTileState extends State<DailyListTile> {
   }
 
   Widget _renderDailyText(String title, double weight, int price, int deposit) {
-    int index = widget.index;
-    return Padding(
-      padding: index == 0
-          ? const EdgeInsets.only(top: 16, bottom: 4, left: 8, right: 8)
-          : index == widget.maxDay - 1
-              ? const EdgeInsets.only(top: 4, bottom: 80, left: 8, right: 8)
-              : const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+    return Container(
+      color: Colors.transparent,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
         children: [
           SizedBox(

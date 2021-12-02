@@ -79,10 +79,17 @@ class _MyHomePageState extends State<MyHomePage>
   ListView _renderList() {
     return ListView.separated(
       itemBuilder: (context, index) {
-        return DailyListTile(
-            index: index,
-            maxDay: DateTime(year, month + 1, 0).day,
-            order: monthOrder[index]);
+        return Container(
+          padding: index == 0
+              ? const EdgeInsets.only(top: 16)
+              : index == monthOrder.length - 1
+                  ? const EdgeInsets.only(bottom: 80)
+                  : const EdgeInsets.all(0),
+          child: DailyListTile(
+              index: index,
+              maxDay: monthOrder.length,
+              order: monthOrder[index]),
+        );
       },
       separatorBuilder: (context, index) =>
           const Divider(color: Colors.black38),
@@ -217,7 +224,7 @@ class _MyHomePageState extends State<MyHomePage>
                     context: context, builder: (context) => dialog);
                 if (order != null) {
                   await repository.insertOrder(order);
-                  _loadOrder(year, month);
+                  await _loadOrder(year, month);
                 }
               },
               tooltip: '등록하기',
