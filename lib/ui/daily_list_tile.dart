@@ -46,22 +46,22 @@ class _DailyListTileState extends State<DailyListTile> {
     for (var e in order.orders) {
       totalPrice += e.price;
       totalWeight += e.weight;
-      totalBalance += e.deposit;
+      totalBalance += (e.price * e.weight).toInt() - e.deposit;
       if (e.type == LegType.front) {
         isFront = true;
-        prices[0] += e.price;
-        weights[0] += e.weight;
-        balances[0] += e.deposit;
+        prices[0] = e.price;
+        weights[0] = e.weight;
+        balances[0] = (e.price * e.weight).toInt() - e.deposit;
       } else if (e.type == LegType.back) {
         isBack = true;
-        prices[1] += e.price;
-        weights[1] += e.weight;
-        balances[1] += e.deposit;
+        prices[1] = e.price;
+        weights[1] = e.weight;
+        balances[1] = (e.price * e.weight).toInt() - e.deposit;
       } else {
         isMix = true;
-        prices[2] += e.price;
-        weights[2] += e.weight;
-        balances[2] += e.deposit;
+        prices[2] = e.price;
+        weights[2] = e.weight;
+        balances[2] = (e.price * e.weight).toInt() - e.deposit;
       }
     }
   }

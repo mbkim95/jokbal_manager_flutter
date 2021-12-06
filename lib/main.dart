@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:jokbal_manager/model/order.dart';
 import 'package:jokbal_manager/model/order_entity.dart';
+import 'package:jokbal_manager/model/order_sum.dart';
 import 'package:jokbal_manager/repository/order_repository.dart';
 import 'package:jokbal_manager/ui/add_order_dialog.dart';
 import 'package:jokbal_manager/ui/daily_list_tile.dart';
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   final String title;
 
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -59,9 +60,29 @@ class _MyHomePageState extends State<MyHomePage>
 
   Future _loadOrder(int year, int month) async {
     var list = await repository.getMonthOrders(year, month);
+    var total = _sumTotalOrders(list);
     setState(() {
       monthOrder = list;
+      totalWeight = total.totalWeight;
+      totalPrice = total.totalPrice;
+      totalBalance = total.totalBalance;
     });
+  }
+
+  OrderSum _sumTotalOrders(List<DayOrder> orders) {
+    double weights = 0.0;
+    int prices = 0;
+    int balances = 0;
+
+    for (DayOrder today in orders) {
+      for (Order order in today.orders) {
+        weights += order.weight;
+        prices += order.price;
+        balances += (order.weight * order.price).toInt() - order.deposit;
+      }
+    }
+
+    return OrderSum(weights, prices, balances);
   }
 
   Row _renderTotalValue() {
