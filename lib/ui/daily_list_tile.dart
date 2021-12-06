@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:jokbal_manager/model/order.dart';
 
+import 'order_info_dialog.dart';
+
 class DailyListTile extends StatefulWidget {
   final int maxDay;
   final int index;
@@ -83,16 +85,56 @@ class _DailyListTileState extends State<DailyListTile> {
                 _renderDailyText(
                     order.date, totalWeight, totalPrice, totalBalance),
                 isFront
-                    ? _renderDailyText('앞발', weights[0], prices[0], balances[0])
+                    ? GestureDetector(
+                        child: _renderDailyText(
+                            '앞발', weights[0], prices[0], balances[0]),
+                        onTap: () {
+                          var dialog = _renderOrderInfoDialog(order.date, 0);
+                          showDialog(
+                              context: context, builder: (context) => dialog);
+                        },
+                      )
                     : Container(),
                 isBack
-                    ? _renderDailyText('뒷발', weights[1], prices[1], balances[1])
+                    ? GestureDetector(
+                        child: _renderDailyText(
+                            '뒷발', weights[1], prices[1], balances[1]),
+                        onTap: () {
+                          var dialog = _renderOrderInfoDialog(order.date, 1);
+                          showDialog(
+                              context: context, builder: (context) => dialog);
+                        },
+                      )
                     : Container(),
                 isMix
-                    ? _renderDailyText('혼합', weights[2], prices[2], balances[2])
+                    ? GestureDetector(
+                        child: _renderDailyText(
+                            '혼합', weights[2], prices[2], balances[2]),
+                        onTap: () {
+                          var dialog = _renderOrderInfoDialog(order.date, 2);
+                          showDialog(
+                              context: context, builder: (context) => dialog);
+                        },
+                      )
                     : Container(),
               ],
             ),
+    );
+  }
+
+  OrderInfoDialog _renderOrderInfoDialog(String date, int index) {
+    return OrderInfoDialog(
+      type: index == 0
+          ? LegType.front
+          : index == 1
+              ? LegType.back
+              : LegType.mix,
+      date: date,
+      weight: weights[index],
+      price: prices[index],
+      deposit: (weights[index] * prices[index]).toInt() + balances[index],
+      updateCallback: (order) {},
+      removeCallback: (order) {},
     );
   }
 
