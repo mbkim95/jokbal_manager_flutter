@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:jokbal_manager/model/order.dart';
+import 'package:jokbal_manager/model/order_entity.dart';
 
 import 'order_info_dialog.dart';
 
@@ -7,11 +8,15 @@ class DailyListTile extends StatefulWidget {
   final int maxDay;
   final int index;
   final DayOrder order;
+  final Function(OrderEntity) updateCallback;
+  final Function(OrderEntity) removeCallback;
 
   const DailyListTile(
       {required this.index,
       required this.maxDay,
       required this.order,
+      required this.updateCallback,
+      required this.removeCallback,
       Key? key})
       : super(key: key);
 
@@ -133,8 +138,8 @@ class _DailyListTileState extends State<DailyListTile> {
       weight: weights[index],
       price: prices[index],
       deposit: (weights[index] * prices[index]).toInt() + balances[index],
-      updateCallback: (order) {},
-      removeCallback: (order) {},
+      updateCallback: widget.updateCallback,
+      removeCallback: widget.removeCallback,
     );
   }
 

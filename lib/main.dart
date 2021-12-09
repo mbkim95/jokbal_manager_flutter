@@ -107,9 +107,19 @@ class _MyHomePageState extends State<MyHomePage>
                   ? const EdgeInsets.only(bottom: 80)
                   : const EdgeInsets.all(0),
           child: DailyListTile(
-              index: index,
-              maxDay: monthOrder.length,
-              order: monthOrder[index]),
+            index: index,
+            maxDay: monthOrder.length,
+            order: monthOrder[index],
+            updateCallback: (order) async {
+              var prevOrder = monthOrder[index];
+              await repository.updateOrder(prevOrder.date, order.type, order);
+              await _loadOrder(year, month);
+            },
+            removeCallback: (order) async {
+              await repository.deleteOrder(order);
+              await _loadOrder(year, month);
+            },
+          ),
         );
       },
       separatorBuilder: (context, index) =>

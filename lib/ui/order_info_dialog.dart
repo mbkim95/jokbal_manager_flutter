@@ -32,7 +32,7 @@ class OrderInfoDialog extends StatefulWidget {
 }
 
 class _OrderInfoDialogState extends State<OrderInfoDialog> {
-  late String date = formatter.format(DateTime.now());
+  late String date = widget.date;
   final double fontSize = 18;
 
   late final LegType _selectedLeg = widget.type;
@@ -337,9 +337,7 @@ class _OrderInfoDialogState extends State<OrderInfoDialog> {
               label,
               style: TextStyle(fontSize: fontSize),
             ),
-            const SizedBox(
-              width: 40,
-            ),
+            const SizedBox(width: 40),
             Expanded(
               child: GestureDetector(
                 onTap: () async {
