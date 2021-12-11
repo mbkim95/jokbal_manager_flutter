@@ -49,6 +49,14 @@ class _OrderInfoDialogState extends State<OrderInfoDialog> {
   @override
   void initState() {
     super.initState();
+    int price = _priceController.toInt();
+    double weight = _weightController.toDouble();
+    int deposit = _depositController.toInt();
+    setState(() {
+      _totalPrice = (price * weight).toInt();
+      _diffPrice = _totalPrice - deposit;
+    });
+
     _weightController.addListener(() {
       int price = _priceController.toInt();
       double weight = _weightController.toDouble();
@@ -97,7 +105,7 @@ class _OrderInfoDialogState extends State<OrderInfoDialog> {
         width: width,
         color: Theme.of(context).primaryColor,
         child: const Text(
-          '추가하기',
+          '주문 정보',
           style: TextStyle(color: Colors.white, fontSize: 28),
         ),
       ),

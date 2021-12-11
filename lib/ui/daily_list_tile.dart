@@ -137,7 +137,7 @@ class _DailyListTileState extends State<DailyListTile> {
       date: date,
       weight: weights[index],
       price: prices[index],
-      deposit: (weights[index] * prices[index]).toInt() + balances[index],
+      deposit: (weights[index] * prices[index]).toInt() - balances[index],
       updateCallback: widget.updateCallback,
       removeCallback: widget.removeCallback,
     );
