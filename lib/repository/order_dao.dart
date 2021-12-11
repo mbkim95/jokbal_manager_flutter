@@ -1,12 +1,14 @@
 import 'package:jokbal_manager/model/order_entity.dart';
 import 'package:jokbal_manager/repository/database_provider.dart';
+import 'package:sqflite/sqflite.dart';
 
 class OrderDao {
   final provider = DatabaseProvider.provider;
 
   Future insertOrder(OrderEntity order) async {
     final db = await provider.db;
-    await db.insert('orders', order.toJson());
+    await db.insert('orders', order.toJson(),
+        conflictAlgorithm: ConflictAlgorithm.ignore);
   }
 
   Future<List<OrderEntity>> getOrderDate(String start, String end) async {
