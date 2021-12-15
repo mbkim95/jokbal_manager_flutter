@@ -1,9 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jokbal_manager/bloc/order_bloc.dart';
-import 'package:jokbal_manager/bloc/order_event.dart';
-import 'package:jokbal_manager/bloc/order_state.dart';
+import 'package:jokbal_manager/bloc/month_order_bloc.dart';
+import 'package:jokbal_manager/bloc/month_order_event.dart';
+import 'package:jokbal_manager/bloc/month_order_state.dart';
 import 'package:jokbal_manager/model/order.dart';
 import 'package:jokbal_manager/ui/daily_list_tile.dart';
 import 'package:month_picker_dialog/month_picker_dialog.dart';
@@ -20,7 +20,7 @@ class _DailyPageState extends State<DailyPage> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        BlocBuilder<OrderBloc, OrderState>(
+        BlocBuilder<MonthOrderBloc, MonthOrderState>(
           builder: (context, state) {
             if (state is LoadingState || state is ErrorState) {
               return _renderMaterialWidget(context, "", 0.0, 0, 0);
@@ -32,7 +32,7 @@ class _DailyPageState extends State<DailyPage> {
           },
         ),
         Expanded(
-          child: BlocBuilder<OrderBloc, OrderState>(
+          child: BlocBuilder<MonthOrderBloc, MonthOrderState>(
               builder: (BuildContext context, state) {
             if (state is LoadingState) {
               return const Center(child: CircularProgressIndicator());
@@ -62,7 +62,8 @@ class _DailyPageState extends State<DailyPage> {
                   ElevatedButton(
                     child: const Icon(Icons.arrow_left),
                     onPressed: () {
-                      BlocProvider.of<OrderBloc>(context).add(PrevMonthEvent());
+                      BlocProvider.of<MonthOrderBloc>(context)
+                          .add(PrevMonthEvent());
                     },
                   ),
                   ElevatedButton(
@@ -78,7 +79,7 @@ class _DailyPageState extends State<DailyPage> {
                           context: context,
                           initialDate: DateTime.parse("$date-01"));
                       if (_pickedMonth != null) {
-                        BlocProvider.of<OrderBloc>(context).add(
+                        BlocProvider.of<MonthOrderBloc>(context).add(
                             ChangeMonthEvent(
                                 year: _pickedMonth.year,
                                 month: _pickedMonth.month));
@@ -88,7 +89,8 @@ class _DailyPageState extends State<DailyPage> {
                   ElevatedButton(
                     child: const Icon(Icons.arrow_right),
                     onPressed: () {
-                      BlocProvider.of<OrderBloc>(context).add(NextMonthEvent());
+                      BlocProvider.of<MonthOrderBloc>(context)
+                          .add(NextMonthEvent());
                     },
                   ),
                 ],
@@ -135,11 +137,11 @@ class _DailyPageState extends State<DailyPage> {
             order: orders[index],
             updateCallback: (order) {
               var prevOrder = orders[index];
-              BlocProvider.of<OrderBloc>(context).add(
+              BlocProvider.of<MonthOrderBloc>(context).add(
                   UpdateOrderEvent(prevDate: prevOrder.date, order: order));
             },
             removeCallback: (order) async {
-              BlocProvider.of<OrderBloc>(context)
+              BlocProvider.of<MonthOrderBloc>(context)
                   .add(DeleteDayOrderEvent(order: order));
             },
           ),

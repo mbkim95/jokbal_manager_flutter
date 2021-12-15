@@ -3,15 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:jokbal_manager/model/order_entity.dart';
 
 @immutable
-abstract class OrderEvent extends Equatable {}
+abstract class MonthOrderEvent extends Equatable {}
 
-class LoadDayOrderListEvent extends OrderEvent {
+class LoadDayOrderListEvent extends MonthOrderEvent {
   @override
   List<Object?> get props => [];
 }
 
-class CreateDayOrderEvent extends OrderEvent {
-  OrderEntity order;
+class CreateDayOrderEvent extends MonthOrderEvent {
+  final OrderEntity order;
 
   CreateDayOrderEvent({required this.order});
 
@@ -19,8 +19,8 @@ class CreateDayOrderEvent extends OrderEvent {
   List<Object?> get props => [order];
 }
 
-class DeleteDayOrderEvent extends OrderEvent {
-  OrderEntity order;
+class DeleteDayOrderEvent extends MonthOrderEvent {
+  final OrderEntity order;
 
   DeleteDayOrderEvent({required this.order});
 
@@ -28,9 +28,9 @@ class DeleteDayOrderEvent extends OrderEvent {
   List<Object?> get props => [order];
 }
 
-class UpdateOrderEvent extends OrderEvent {
-  String prevDate;
-  OrderEntity order;
+class UpdateOrderEvent extends MonthOrderEvent {
+  final String prevDate;
+  final OrderEntity order;
 
   UpdateOrderEvent({required this.prevDate, required this.order});
 
@@ -38,9 +38,9 @@ class UpdateOrderEvent extends OrderEvent {
   List<Object?> get props => [prevDate, order];
 }
 
-class ChangeMonthEvent extends OrderEvent {
-  int year;
-  int month;
+class ChangeMonthEvent extends MonthOrderEvent {
+  final int year;
+  final int month;
 
   ChangeMonthEvent({required this.year, required this.month});
 
@@ -48,12 +48,12 @@ class ChangeMonthEvent extends OrderEvent {
   List<Object?> get props => [year, month];
 }
 
-class NextMonthEvent extends OrderEvent {
+class NextMonthEvent extends MonthOrderEvent {
   @override
   List<Object?> get props => [];
 }
 
-class PrevMonthEvent extends OrderEvent {
+class PrevMonthEvent extends MonthOrderEvent {
   @override
   List<Object?> get props => [];
 }

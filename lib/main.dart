@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
-import 'package:jokbal_manager/bloc/order_bloc.dart';
-import 'package:jokbal_manager/bloc/order_event.dart';
+import 'package:jokbal_manager/bloc/month_order_bloc.dart';
+import 'package:jokbal_manager/bloc/month_order_event.dart';
 import 'package:jokbal_manager/model/order_entity.dart';
 import 'package:jokbal_manager/repository/order_repository.dart';
 import 'package:jokbal_manager/ui/add_order_dialog.dart';
 import 'package:jokbal_manager/ui/daily_page.dart';
+import 'package:jokbal_manager/ui/total_page.dart';
 
 final formatter = DateFormat('yyyy-MM');
 
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => OrderBloc(OrderRepository()),
+      create: (_) => MonthOrderBloc(OrderRepository()),
       child: MaterialApp(
           title: 'Jokbal Manager',
           debugShowCheckedModeBanner: false,
@@ -64,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage>
         _index = _tabController!.index;
       });
     });
-    BlocProvider.of<OrderBloc>(context).add(LoadDayOrderListEvent());
+    BlocProvider.of<MonthOrderBloc>(context).add(LoadDayOrderListEvent());
   }
 
   @override
@@ -98,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage>
                 OrderEntity? order = await showDialog(
                     context: context, builder: (context) => dialog);
                 if (order != null) {
-                  BlocProvider.of<OrderBloc>(context)
+                  BlocProvider.of<MonthOrderBloc>(context)
                       .add(CreateDayOrderEvent(order: order));
                 }
               },

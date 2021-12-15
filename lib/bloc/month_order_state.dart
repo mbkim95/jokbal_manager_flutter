@@ -3,15 +3,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:jokbal_manager/model/order.dart';
 
 @immutable
-abstract class OrderState extends Equatable {}
+abstract class MonthOrderState extends Equatable {}
 
-class LoadingState extends OrderState {
+class LoadingState extends MonthOrderState {
   @override
   List<Object?> get props => [];
 }
 
-class ErrorState extends OrderState {
-  String message;
+class ErrorState extends MonthOrderState {
+  final String message;
 
   ErrorState({required this.message});
 
@@ -19,13 +19,13 @@ class ErrorState extends OrderState {
   List<Object?> get props => [message];
 }
 
-class LoadedState extends OrderState {
-  int year;
-  int month;
-  List<DayOrder> orders;
-  double totalWeight;
-  int totalPrice;
-  int totalBalance;
+class LoadedState extends MonthOrderState {
+  final int year;
+  final int month;
+  final List<DayOrder> orders;
+  final double totalWeight;
+  final int totalPrice;
+  final int totalBalance;
 
   LoadedState(
       {required this.year,

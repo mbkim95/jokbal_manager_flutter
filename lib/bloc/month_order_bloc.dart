@@ -1,20 +1,20 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:jokbal_manager/bloc/order_event.dart';
-import 'package:jokbal_manager/bloc/order_state.dart';
+import 'package:jokbal_manager/bloc/month_order_event.dart';
+import 'package:jokbal_manager/bloc/month_order_state.dart';
 import 'package:jokbal_manager/model/order.dart';
 import 'package:jokbal_manager/model/order_sum.dart';
 import 'package:jokbal_manager/repository/order_repository.dart';
 import 'package:jokbal_manager/util.dart';
 
-class OrderBloc extends Bloc<OrderEvent, OrderState> {
+class MonthOrderBloc extends Bloc<MonthOrderEvent, MonthOrderState> {
   final OrderRepository repository;
   final formatter = DateFormat("yyyy-MM");
   late int year;
   late int month;
   List<DayOrder> orders = [];
 
-  OrderBloc(this.repository)
+  MonthOrderBloc(this.repository)
       : super(LoadedState(
             orders: generateDummyDate(),
             year: 2022,
@@ -28,7 +28,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
   }
 
   @override
-  Stream<OrderState> mapEventToState(OrderEvent event) async* {
+  Stream<MonthOrderState> mapEventToState(MonthOrderEvent event) async* {
     if (event is LoadDayOrderListEvent) {
       yield* _mapLoadOrderListEvent(event);
     } else if (event is CreateDayOrderEvent) {
@@ -51,7 +51,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     yield* super.mapEventToState(event);
   }
 
-  Stream<OrderState> _mapLoadOrderListEvent(
+  Stream<MonthOrderState> _mapLoadOrderListEvent(
       LoadDayOrderListEvent event) async* {
     try {
       yield LoadingState();
@@ -70,7 +70,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     }
   }
 
-  Stream<OrderState> _mapCreateDayOrderEvent(CreateDayOrderEvent event) async* {
+  Stream<MonthOrderState> _mapCreateDayOrderEvent(
+      CreateDayOrderEvent event) async* {
     try {
       yield LoadingState();
       await repository.insertOrder(event.order);
@@ -92,7 +93,8 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     }
   }
 
-  Stream<OrderState> _mapDeleteDayOrderEvent(DeleteDayOrderEvent event) async* {
+  Stream<MonthOrderState> _mapDeleteDayOrderEvent(
+      DeleteDayOrderEvent event) async* {
     try {
       yield LoadingState();
       await repository.deleteOrder(event.order);
@@ -114,7 +116,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     }
   }
 
-  Stream<OrderState> _mapUpdateOrderEvent(UpdateOrderEvent event) async* {
+  Stream<MonthOrderState> _mapUpdateOrderEvent(UpdateOrderEvent event) async* {
     try {
       yield LoadingState();
       await repository.updateOrder(
@@ -137,7 +139,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     }
   }
 
-  Stream<OrderState> _mapChangeMonthEvent(int year, int month) async* {
+  Stream<MonthOrderState> _mapChangeMonthEvent(int year, int month) async* {
     try {
       yield LoadingState();
 
