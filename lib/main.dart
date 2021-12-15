@@ -4,6 +4,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:jokbal_manager/bloc/month/month_order_bloc.dart';
 import 'package:jokbal_manager/bloc/month/month_order_event.dart';
+import 'package:jokbal_manager/bloc/year/year_order_bloc.dart';
 import 'package:jokbal_manager/model/order_entity.dart';
 import 'package:jokbal_manager/repository/order_repository.dart';
 import 'package:jokbal_manager/ui/add_order_dialog.dart';
@@ -21,8 +22,11 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => MonthOrderBloc(OrderRepository()),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => MonthOrderBloc(OrderRepository())),
+        BlocProvider(create: (_) => YearOrderBloc(OrderRepository())),
+      ],
       child: MaterialApp(
           title: 'Jokbal Manager',
           debugShowCheckedModeBanner: false,
@@ -65,7 +69,6 @@ class _MyHomePageState extends State<MyHomePage>
         _index = _tabController!.index;
       });
     });
-    BlocProvider.of<MonthOrderBloc>(context).add(LoadDayOrderListEvent());
   }
 
   @override
@@ -86,11 +89,9 @@ class _MyHomePageState extends State<MyHomePage>
           ],
         ),
       ),
-      body: TabBarView(controller: _tabController, children: [
-        const DailyPage(),
-        Container(
-          color: Colors.grey,
-        )
+      body: TabBarView(controller: _tabController, children: const [
+        DailyPage(),
+        TotalPage(),
       ]),
       floatingActionButton: _index == 0
           ? FloatingActionButton(

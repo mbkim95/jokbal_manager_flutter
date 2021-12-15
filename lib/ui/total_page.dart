@@ -1,51 +1,50 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:jokbal_manager/bloc/month/month_order_bloc.dart';
-import 'package:jokbal_manager/bloc/month/month_order_event.dart';
-import 'package:jokbal_manager/bloc/month/month_order_state.dart';
+import 'package:jokbal_manager/bloc/year/year_order_bloc.dart';
+import 'package:jokbal_manager/bloc/year/year_order_event.dart';
+import 'package:jokbal_manager/bloc/year/year_order_state.dart';
 import 'package:jokbal_manager/model/order.dart';
-import 'package:jokbal_manager/ui/daily_list_tile.dart';
-import 'package:month_picker_dialog/month_picker_dialog.dart';
+import 'package:jokbal_manager/ui/month_list_tile.dart';
 
-class DailyPage extends StatefulWidget {
-  const DailyPage({Key? key}) : super(key: key);
+class TotalPage extends StatefulWidget {
+  const TotalPage({Key? key}) : super(key: key);
 
   @override
-  _DailyPageState createState() => _DailyPageState();
+  _TotalPageState createState() => _TotalPageState();
 }
 
-class _DailyPageState extends State<DailyPage> {
+class _TotalPageState extends State<TotalPage> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<MonthOrderBloc>(context).add(LoadDayOrderListEvent());
+    BlocProvider.of<YearOrderBloc>(context).add(LoadMonthOrderListEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        BlocBuilder<MonthOrderBloc, MonthOrderState>(
+        BlocBuilder<YearOrderBloc, YearOrderState>(
           builder: (context, state) {
             if (state is LoadingState || state is ErrorState) {
               return _renderMaterialWidget(context, "", 0.0, 0, 0);
             }
-            String date =
-                "${(state as LoadedState).year}-${state.month < 10 ? '0${state.month}' : state.month}";
+            String date = "${(state as LoadedState).year}";
             return _renderMaterialWidget(context, date, state.totalWeight,
                 state.totalPrice, state.totalBalance);
           },
         ),
         Expanded(
-          child: BlocBuilder<MonthOrderBloc, MonthOrderState>(
+          child: BlocBuilder<YearOrderBloc, YearOrderState>(
               builder: (BuildContext context, state) {
             if (state is LoadingState) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is ErrorState) {
               return const Center(child: Text("Error"));
             }
-            return _renderList((state as LoadedState).orders);
+
+            return _renderList((state as LoadedState).year, state.orders);
           }),
         ),
       ],
@@ -68,8 +67,8 @@ class _DailyPageState extends State<DailyPage> {
                   ElevatedButton(
                     child: const Icon(Icons.arrow_left),
                     onPressed: () {
-                      BlocProvider.of<MonthOrderBloc>(context)
-                          .add(PrevMonthEvent());
+                      BlocProvider.of<YearOrderBloc>(context)
+                          .add(PrevYearEvent());
                     },
                   ),
                   ElevatedButton(
@@ -81,22 +80,30 @@ class _DailyPageState extends State<DailyPage> {
                       ),
                     ),
                     onPressed: () async {
-                      var _pickedMonth = await showMonthPicker(
+                      var yearPicker = YearPicker(
+                          firstDate: DateTime(2015),
+                          lastDate: DateTime(2099),
+                          selectedDate: DateTime.now(),
+                          onChanged: (date) {
+                            Navigator.of(context).pop(date);
+                          });
+                      DateTime pickedYear = await showDialog(
                           context: context,
-                          initialDate: DateTime.parse("$date-01"));
-                      if (_pickedMonth != null) {
-                        BlocProvider.of<MonthOrderBloc>(context).add(
-                            ChangeMonthEvent(
-                                year: _pickedMonth.year,
-                                month: _pickedMonth.month));
-                      }
+                          builder: (_) => AlertDialog(
+                              contentPadding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              content: SizedBox(
+                                  width: 300, height: 450, child: yearPicker)));
+                      print(pickedYear);
+                      BlocProvider.of<YearOrderBloc>(context)
+                          .add(ChangeYearEvent(year: pickedYear.year));
                     },
                   ),
                   ElevatedButton(
                     child: const Icon(Icons.arrow_right),
                     onPressed: () {
-                      BlocProvider.of<MonthOrderBloc>(context)
-                          .add(NextMonthEvent());
+                      BlocProvider.of<YearOrderBloc>(context)
+                          .add(NextYearEvent());
                     },
                   ),
                 ],
@@ -128,7 +135,7 @@ class _DailyPageState extends State<DailyPage> {
     );
   }
 
-  ListView _renderList(List<DayOrder> orders) {
+  ListView _renderList(int year, List<MonthOrder> orders) {
     return ListView.separated(
       itemBuilder: (context, index) {
         return Container(
@@ -137,19 +144,9 @@ class _DailyPageState extends State<DailyPage> {
               : index == orders.length - 1
                   ? const EdgeInsets.only(bottom: 80)
                   : const EdgeInsets.all(0),
-          child: DailyListTile(
-            index: index,
-            maxDay: orders.length,
-            order: orders[index],
-            updateCallback: (order) {
-              var prevOrder = orders[index];
-              BlocProvider.of<MonthOrderBloc>(context).add(
-                  UpdateOrderEvent(prevDate: prevOrder.date, order: order));
-            },
-            removeCallback: (order) async {
-              BlocProvider.of<MonthOrderBloc>(context)
-                  .add(DeleteDayOrderEvent(order: order));
-            },
+          child: MonthListTile(
+            date: '$year-${index + 1 < 10 ? "0${index + 1}" : index + 1}',
+            orders: orders[index],
           ),
         );
       },
